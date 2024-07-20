@@ -1,69 +1,69 @@
 return {
 
-    { 'numToStr/Comment.nvim', opts = {} },
+	{ 'numToStr/Comment.nvim', opts = {} },
 
-    {
-        "numToStr/Comment.nvim",
-        config = function()
-            require("Comment").setup()
-        end
-    },
+	{
+		"numToStr/Comment.nvim",
+		config = function()
+			require("Comment").setup()
+		end
+	},
 
-    {
-        "ellisonleao/gruvbox.nvim",
-        priority = 1000,
-        config = function()
-            vim.cmd("colorscheme gruvbox")
-        end
-    },
-    --
-    
-    "williamboman/mason.nvim",
-    "williamboman/mason-lspconfig.nvim",
-    "neovim/nvim-lspconfig",
+	{
+		"ellisonleao/gruvbox.nvim",
+		priority = 1000,
+		config = function()
+			vim.cmd("colorscheme gruvbox")
+		end
+	},
+	--
 
-    'folke/neodev.nvim', -- new
+	"williamboman/mason.nvim",
 
-    {
-        'hrsh7th/nvim-cmp',
-        dependencies = {
-            'L3MON4D3/LuaSnip',
-            'saadparwaiz1/cmp_luasnip',
-            'rafamadriz/friendly-snippets',
-            
-            'hrsh7th/cmp-nvim-lsp',
-            
-        },
-    },
+	"williamboman/mason-lspconfig.nvim",
+	"neovim/nvim-lspconfig",
 
-    {
-        'nvim-treesitter/nvim-treesitter',
-        build = ':TSUpdate',
-    },
+	'folke/neodev.nvim', -- new
 
+	{
+		'hrsh7th/nvim-cmp',
+		dependencies = {
+			'L3MON4D3/LuaSnip',
+			'saadparwaiz1/cmp_luasnip',
+			'rafamadriz/friendly-snippets',
 
-    { 
-        'nvim-telescope/telescope.nvim',
-        dependencies = { 'nvim-lua/plenary.nvim' } 
-    },
+			'hrsh7th/cmp-nvim-lsp',
 
-    {
-        'nvim-telescope/telescope-fzf-native.nvim',
-        build = 'make',
-    },
+		},
+	},
+
+	{
+		'nvim-treesitter/nvim-treesitter',
+		build = ':TSUpdate',
+	},
 
 
-    {
-        'nvim-lualine/lualine.nvim',
-        dependencies = {
-            "nvim-tree/nvim-web-devicons"
-        },
-        config = function()
-            require("lualine").setup({
-                icons_enabled = true,
-                theme = 'onedark',
-            })
-        end,
-    }
+	{
+		'nvim-telescope/telescope.nvim',
+		dependencies = { 'nvim-lua/plenary.nvim' }
+	},
 
+	{
+		'nvim-telescope/telescope-fzf-native.nvim',
+		build = 'make',
+	},
+
+
+	{
+		'nvim-lualine/lualine.nvim',
+		dependencies = {
+			"nvim-tree/nvim-web-devicons"
+		},
+		config = function()
+			require("lualine").setup({
+				icons_enabled = true,
+				theme = 'onedark',
+			})
+		end,
+	}
 }
