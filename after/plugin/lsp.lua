@@ -26,30 +26,36 @@ end
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
-
 -- mason
-require("mason").setup({
-	ensure_installed = {
-		"lua-language-server",
-		"stylua",
-		"css-lsp",
-		"typescript-language-server",
-		"prettier",
-		"black",
-		"isor",
-		"pyright",
-		"python-lsp-server"
-	},
-	handlers = {}
-})
-require("mason-lspconfig").setup_handlers({
+require('mason').setup()
+local registry = require('mason-registry')
+local installed_lsp = { 'lua-language-server', 'stylua', 'css-lsp', 'typescript-language-server', 'prettier', 'black',
+	'isort', 'pyright', 'python-lsp-server', 'json-lsp', 'bash-language-server',
+}
+registry.refresh(function()
+	for _, name in pairs(installed_lsp) do
+		local package = registry.get_package(name)
+		if not registry.is_installed(name) then
+			package:install()
+		else
+			package:check_new_version(function(success, result_or_err)
+				if success then
+					package:install({ version = result_or_err.latest_version })
+				end
+			end)
+		end
+	end
+end)
+
+local mlsp = require('mason-lspconfig')
+mlsp.setup_handlers({
 	function(server_name)
-		require("lspconfig")[server_name].setup {
+		require('lspconfig')[server_name].setup {
 			on_attach = on_attach,
 			capabilities = capabilities
 		}
 	end,
-	["lua_ls"] = function()
+	['lua_ls'] = function()
 		require('neodev').setup()
 		require('lspconfig').lua_ls.setup {
 			on_attach = on_attach,
@@ -62,7 +68,7 @@ require("mason-lspconfig").setup_handlers({
 			}
 		}
 	end,
-	["pylsp"] = function()
+	['pylsp'] = function()
 		require('lspconfig').pylsp.setup {
 			on_attach = on_attach,
 			capabilities = capabilities,
@@ -81,7 +87,7 @@ require("mason-lspconfig").setup_handlers({
 			},
 		}
 	end,
-	["pyright"] = function()
+	['pyright'] = function()
 		require('lspconfig').pyright.setup {
 			on_attach = on_attach,
 			capabilities = capabilities,
@@ -89,21 +95,21 @@ require("mason-lspconfig").setup_handlers({
 				python = {
 					analysis = {
 						autoSearchPaths = true,
-						diagnosticMode = "openFilesOnly",
+						diagnosticMode = 'openFilesOnly',
 						useLibraryCodeForTypes = true
 					}
 				}, cmd = {
-				"pyright-langserver", "--stdio"
+				'pyright-langserver', '--stdio'
 			},
 				filetypes = {
-					"python"
+					'python'
 				},
 				single_file_support = true
 			}
 		}
 	end,
-	["tsserver"] = function()
-		require("lspconfig").tsserver.setup {
+	['tsserver'] = function()
+		require('lspconfig').tsserver.setup {
 			on_attach = on_attach,
 			capabilities = capabilities,
 			settings = {
@@ -115,10 +121,10 @@ require("mason-lspconfig").setup_handlers({
 	end
 
 	-- another example
-	-- ["omnisharp"] = function()
+	-- ['omnisharp'] = function()
 	--     require('lspconfig').omnisharp.setup {
-	--         filetypes = { "cs", "vb" },
-	--         root_dir = require('lspconfig').util.root_pattern("*.csproj", "*.sln"),
+	--         filetypes = { 'cs', 'vb' },
+	--         root_dir = require('lspconfig').util.root_pattern('*.csproj', '*.sln'),
 	--         on_attach = on_attach,
 	--         capabilities = capabilities,
 	--         enable_roslyn_analyzers = true,
@@ -128,31 +134,31 @@ require("mason-lspconfig").setup_handlers({
 	-- end,
 })
 
-local pylsp = require('mason-registry').get_package('python-lsp-server')
-pylsp:on("install:success", function()
-	local function mason_package_path(package)
-		local path = vim.fn.resolve(vim.fn.stdpath("data") .. "/mason/packages/" .. package)
-		return path
-	end
-	local path = mason_package_path("python-lsp-server")
-	local command = path .. "/venv/bin/pip"
-	local args = {
-		"install",
-		"-U",
-		"pylsp-rope",
-		"python-lsp-black",
-		"pyflakes",
-		"python-lsp-ruff",
-		"pyls-flake8",
-		"sqlalchemy-stubs",
-		"pylsp-mypy",
-		"pyls-memestra"
-	}
-	require("plenary.job")
-		:new({
-			command = command,
-			args = args,
-			cwd = path,
-		})
-		:start()
-end)
+-- local pylsp = require('mason-registry').get_package('python-lsp-server')
+-- pylsp:on('install:success', function()
+-- 	local function mason_package_path(package)
+-- 		local path = vim.fn.resolve(vim.fn.stdpath('data') .. '/mason/packages/' .. package)
+-- 		return path
+-- 	end
+-- 	local path = mason_package_path('python-lsp-server')
+-- 	local command = path .. '/venv/bin/pip'
+-- 	local args = {
+-- 		'install',
+-- 		'-U',
+-- 		'pylsp-rope',
+-- 		'python-lsp-black',
+-- 		'pyflakes',
+-- 		'python-lsp-ruff',
+-- 		'pyls-flake8',
+-- 		'sqlalchemy-stubs',
+-- 		'pylsp-mypy',
+-- 		'pyls-memestra'
+-- 	}
+-- 	require('plenary.job')
+-- 		:new({
+-- 			command = command,
+-- 			args = args,
+-- 			cwd = path,
+-- 		})
+-- 		:start()
+-- end)
