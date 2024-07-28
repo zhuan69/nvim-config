@@ -118,6 +118,17 @@ mlsp.setup_handlers({
 				}
 			}
 		}
+	end,
+	['bashls'] = function()
+		require('lspconfig').bashls.setup{
+			on_attach = on_attach,
+			capabilities = capabilities,
+			cmd = {'bash-language-server','start'},
+			settings={
+			bashIde= {
+				globPattern = "*@(.sh|.bash|.inc|.command|.bashrc)"}},
+			filetypes = {"sh","bash",".bashrc"}
+		}
 	end
 
 	-- another example
