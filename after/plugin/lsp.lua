@@ -1,36 +1,49 @@
 local on_attach = function(_, bufnr)
 	local bufmap = function(keys, func)
-		vim.keymap.set('n', keys, func, { buffer = bufnr })
+		vim.keymap.set("n", keys, func, { buffer = bufnr })
 	end
 
-	bufmap('<leader>r', vim.lsp.buf.rename)
-	bufmap('<leader>a', vim.lsp.buf.code_action)
+	bufmap("<leader>r", vim.lsp.buf.rename)
+	bufmap("<leader>a", vim.lsp.buf.code_action)
 
-	bufmap('gd', vim.lsp.buf.definition)
-	bufmap('gD', vim.lsp.buf.declaration)
-	bufmap('gI', vim.lsp.buf.implementation)
-	bufmap('<leader>D', vim.lsp.buf.type_definition)
+	bufmap("gd", vim.lsp.buf.definition)
+	bufmap("gD", vim.lsp.buf.declaration)
+	bufmap("gI", vim.lsp.buf.implementation)
+	bufmap("<leader>D", vim.lsp.buf.type_definition)
 
-	bufmap('gr', require('telescope.builtin').lsp_references)
-	bufmap('<leader>s', require('telescope.builtin').lsp_document_symbols)
-	bufmap('<leader>S', require('telescope.builtin').lsp_dynamic_workspace_symbols)
-	bufmap('<leader>ff', require('telescope.builtin').find_files)
+	bufmap("gr", require("telescope.builtin").lsp_references)
+	bufmap("<leader>s", require("telescope.builtin").lsp_document_symbols)
+	bufmap("<leader>S", require("telescope.builtin").lsp_dynamic_workspace_symbols)
+	bufmap("<leader>ff", require("telescope.builtin").find_files)
+	bufmap("<leader>fp", require("telescope.builtin").oldfiles)
 
-	bufmap('K', vim.lsp.buf.hover)
+	bufmap("K", vim.lsp.buf.hover)
 
-	vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
-		vim.lsp.buf.format()
-	end, {})
-	bufmap('<leader>FF', vim.lsp.buf.format)
+	-- vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
+	-- 	vim.lsp.buf.format()
+	-- end, {})
 end
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
+capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
 -- mason
-require('mason').setup()
-local registry = require('mason-registry')
-local installed_lsp = { 'lua-language-server', 'stylua', 'css-lsp', 'typescript-language-server', 'prettier', 'black',
-	'isort', 'pyright', 'python-lsp-server', 'json-lsp', 'bash-language-server',
+require("mason").setup()
+local registry = require("mason-registry")
+local installed_lsp = {
+	"lua-language-server",
+	"stylua",
+	"css-lsp",
+	"typescript-language-server",
+	"prettier",
+	"black",
+	"isort",
+	"pyright",
+	"python-lsp-server",
+	"json-lsp",
+	"bash-language-server",
+	"gopls",
+	"rust-analyzer",
+	"goimports-reviser",
 }
 registry.refresh(function()
 	for _, name in pairs(installed_lsp) do
@@ -47,17 +60,17 @@ registry.refresh(function()
 	end
 end)
 
-local mlsp = require('mason-lspconfig')
+local mlsp = require("mason-lspconfig")
 mlsp.setup_handlers({
 	function(server_name)
-		require('lspconfig')[server_name].setup {
+		require("lspconfig")[server_name].setup({
 			on_attach = on_attach,
-			capabilities = capabilities
-		}
+			capabilities = capabilities,
+		})
 	end,
-	['lua_ls'] = function()
-		require('neodev').setup()
-		require('lspconfig').lua_ls.setup {
+	["lua_ls"] = function()
+		require("neodev").setup()
+		require("lspconfig").lua_ls.setup({
 			on_attach = on_attach,
 			capabilities = capabilities,
 			settings = {
@@ -65,11 +78,11 @@ mlsp.setup_handlers({
 					workspace = { checkThirdParty = false },
 					telemetry = { enable = false },
 				},
-			}
-		}
+			},
+		})
 	end,
-	['pylsp'] = function()
-		require('lspconfig').pylsp.setup {
+	["pylsp"] = function()
+		require("lspconfig").pylsp.setup({
 			on_attach = on_attach,
 			capabilities = capabilities,
 			settings = {
@@ -77,59 +90,78 @@ mlsp.setup_handlers({
 					plugins = {
 						rope_autoimport = {
 							completions = {
-								enabled = true
+								enabled = true,
 							},
 							enabled = true,
-							memory = true
-						}
-					}
-				}
+							memory = true,
+						},
+					},
+				},
 			},
-		}
+		})
 	end,
-	['pyright'] = function()
-		require('lspconfig').pyright.setup {
+	["pyright"] = function()
+		require("lspconfig").pyright.setup({
 			on_attach = on_attach,
 			capabilities = capabilities,
 			settings = {
 				python = {
 					analysis = {
 						autoSearchPaths = true,
-						diagnosticMode = 'openFilesOnly',
-						useLibraryCodeForTypes = true
-					}
-				}, cmd = {
-				'pyright-langserver', '--stdio'
-			},
-				filetypes = {
-					'python'
+						diagnosticMode = "openFilesOnly",
+						useLibraryCodeForTypes = true,
+					},
 				},
-				single_file_support = true
-			}
-		}
+				cmd = {
+					"pyright-langserver",
+					"--stdio",
+				},
+				filetypes = {
+					"python",
+				},
+				single_file_support = true,
+			},
+		})
 	end,
-	['tsserver'] = function()
-		require('lspconfig').tsserver.setup {
+	["tsserver"] = function()
+		require("lspconfig").tsserver.setup({
 			on_attach = on_attach,
 			capabilities = capabilities,
 			settings = {
 				completions = {
-					completeFunctionCalls = true
-				}
-			}
-		}
+					completeFunctionCalls = true,
+				},
+				implicitProjectConfiguration = {
+					checkJs = true,
+				},
+			},
+		})
 	end,
-	['bashls'] = function()
-		require('lspconfig').bashls.setup{
+	["bashls"] = function()
+		require("lspconfig").bashls.setup({
 			on_attach = on_attach,
 			capabilities = capabilities,
-			cmd = {'bash-language-server','start'},
-			settings={
-			bashIde= {
-				globPattern = "*@(.sh|.bash|.inc|.command|.bashrc)"}},
-			filetypes = {"sh","bash",".bashrc"}
-		}
-	end
+			cmd = { "bash-language-server", "start" },
+			settings = {
+				bashIde = {
+					globPattern = "*@(.sh|.bash|.inc|.command|.bashrc)",
+				},
+			},
+			filetypes = { "sh", "bash", ".bashrc" },
+		})
+	end,
+	["gopls"] = function()
+		require("lspconfig").gopls.setup({
+			settings = {
+				gopls = {
+					analyses = {
+						unusedparams = true,
+					},
+					staticcheck = true,
+				},
+			},
+		})
+	end,
 
 	-- another example
 	-- ['omnisharp'] = function()
@@ -145,31 +177,31 @@ mlsp.setup_handlers({
 	-- end,
 })
 
--- local pylsp = require('mason-registry').get_package('python-lsp-server')
--- pylsp:on('install:success', function()
--- 	local function mason_package_path(package)
--- 		local path = vim.fn.resolve(vim.fn.stdpath('data') .. '/mason/packages/' .. package)
--- 		return path
--- 	end
--- 	local path = mason_package_path('python-lsp-server')
--- 	local command = path .. '/venv/bin/pip'
--- 	local args = {
--- 		'install',
--- 		'-U',
--- 		'pylsp-rope',
--- 		'python-lsp-black',
--- 		'pyflakes',
--- 		'python-lsp-ruff',
--- 		'pyls-flake8',
--- 		'sqlalchemy-stubs',
--- 		'pylsp-mypy',
--- 		'pyls-memestra'
--- 	}
--- 	require('plenary.job')
--- 		:new({
--- 			command = command,
--- 			args = args,
--- 			cwd = path,
--- 		})
--- 		:start()
--- end)
+local pylsp = require("mason-registry").get_package("python-lsp-server")
+pylsp:on("install:success", function()
+	local function mason_package_path(package)
+		local path = vim.fn.resolve(vim.fn.stdpath("data") .. "/mason/packages/" .. package)
+		return path
+	end
+	local path = mason_package_path("python-lsp-server")
+	local command = path .. "/venv/bin/pip"
+	local args = {
+		"install",
+		"-U",
+		"pylsp-rope",
+		"python-lsp-black",
+		"pyflakes",
+		"python-lsp-ruff",
+		"pyls-flake8",
+		"sqlalchemy-stubs",
+		"pylsp-mypy",
+		"pyls-memestra",
+	}
+	require("plenary.job")
+		:new({
+			command = command,
+			args = args,
+			cwd = path,
+		})
+		:start()
+end)

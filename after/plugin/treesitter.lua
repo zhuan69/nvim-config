@@ -1,9 +1,9 @@
-require('nvim-treesitter.configs').setup {
-    ensure_installed = { 'vim', 'vimdoc', 'lua', 'cpp', 'python' },
+require("nvim-treesitter.configs").setup({
+	ensure_installed = { "vim", "vimdoc", "lua", "cpp", "python", "jsdoc", "json", "json5", "typescript", "go" },
 
-    auto_install = false,
+	auto_install = true,
 
-    highlight = { enable = true },
+	highlight = { enable = true },
 
-    indent = { enable = true },
-}
+	indent = { enable = true },
+})

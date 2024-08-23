@@ -23,6 +23,8 @@ return {
 	"williamboman/mason-lspconfig.nvim",
 	"neovim/nvim-lspconfig",
 
+	'mhartington/formatter.nvim',
+
 	'folke/neodev.nvim', -- new
 
 	{
