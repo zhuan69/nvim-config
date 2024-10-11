@@ -6,9 +6,9 @@ local on_attach = function(_, bufnr)
 	bufmap("<leader>r", vim.lsp.buf.rename)
 	bufmap("<leader>a", vim.lsp.buf.code_action)
 
-	bufmap("gd", vim.lsp.buf.definition)
+	bufmap("gd", require("telescope.builtin").lsp_definitions)
 	bufmap("gD", vim.lsp.buf.declaration)
-	bufmap("gI", vim.lsp.buf.implementation)
+	bufmap("gI", require("telescope.builtin").lsp_implementations)
 	bufmap("<leader>D", vim.lsp.buf.type_definition)
 
 	bufmap("gr", require("telescope.builtin").lsp_references)
@@ -42,6 +42,8 @@ local installed_lsp = {
 	"json-lsp",
 	"bash-language-server",
 	"gopls",
+	"ruff",
+	"ruff-lsp",
 	"rust-analyzer",
 	"goimports-reviser",
 }
@@ -100,29 +102,45 @@ mlsp.setup_handlers({
 			},
 		})
 	end,
-	["pyright"] = function()
-		require("lspconfig").pyright.setup({
+	["ruff"] = function()
+		require("lspconfig").ruff.setup({
 			on_attach = on_attach,
 			capabilities = capabilities,
 			settings = {
+				pyright = {
+					disabledOrganizeImports = true,
+				},
 				python = {
 					analysis = {
-						autoSearchPaths = true,
-						diagnosticMode = "openFilesOnly",
-						useLibraryCodeForTypes = true,
+						ignore = { "*" },
 					},
 				},
-				cmd = {
-					"pyright-langserver",
-					"--stdio",
-				},
-				filetypes = {
-					"python",
-				},
-				single_file_support = true,
 			},
 		})
 	end,
+	-- ["pyright"] = function()
+	-- 	require("lspconfig").pyright.setup({
+	-- 		on_attach = on_attach,
+	-- 		capabilities = capabilities,
+	-- 		settings = {
+	-- 			python = {
+	-- 				analysis = {
+	-- 					autoSearchPaths = true,
+	-- 					diagnosticMode = "openFilesOnly",
+	-- 					useLibraryCodeForTypes = true,
+	-- 				},
+	-- 			},
+	-- 			cmd = {
+	-- 				"pyright-langserver",
+	-- 				"--stdio",
+	-- 			},
+	-- 			filetypes = {
+	-- 				"python",
+	-- 			},
+	-- 			single_file_support = true,
+	-- 		},
+	-- 	})
+	-- end,
 	["tsserver"] = function()
 		require("lspconfig").tsserver.setup({
 			on_attach = on_attach,

@@ -26,6 +26,19 @@ require("formatter").setup({
 		typescript = {
 			require("formatter.defaults.prettier"),
 		},
+		json = {
+			require("formatter.defaults.prettier"),
+		},
+		python = {
+			function()
+				return {
+					exe = "ruff format",
+					args = {
+						util.escape_path(util.get_current_buffer_file_path()),
+					},
+				}
+			end,
+		},
 		["*"] = {
 			require("formatter.filetypes.any").remove_trailing_whitespace,
 		},
