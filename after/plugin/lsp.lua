@@ -43,9 +43,10 @@ local installed_lsp = {
 	"bash-language-server",
 	"gopls",
 	"ruff",
-	"ruff-lsp",
 	"rust-analyzer",
 	"goimports-reviser",
+	"yaml-language-server",
+	"gomodifytags",
 }
 registry.refresh(function()
 	for _, name in pairs(installed_lsp) do
@@ -83,25 +84,42 @@ mlsp.setup_handlers({
 			},
 		})
 	end,
-	["pylsp"] = function()
-		require("lspconfig").pylsp.setup({
+	["yamlls"] = function()
+		require("neodev").setup()
+		require("lspconfig").yamlls.setup({
 			on_attach = on_attach,
 			capabilities = capabilities,
 			settings = {
-				pylsp = {
-					plugins = {
-						rope_autoimport = {
-							completions = {
-								enabled = true,
-							},
-							enabled = true,
-							memory = true,
-						},
+				yaml = {
+					schemas = {
+						["https://raw.githubusercontent.com/instrumenta/kubernetes-json-schema/master/v1.18.0-standalone-strict/all.json"] = "/*.yaml",
+					},
+					format = {
+						enable = true,
 					},
 				},
 			},
 		})
 	end,
+	-- ["pylsp"] = function()
+	-- 	require("lspconfig").pylsp.setup({
+	-- 		on_attach = on_attach,
+	-- 		capabilities = capabilities,
+	-- 		settings = {
+	-- 			pylsp = {
+	-- 				plugins = {
+	-- 					rope_autoimport = {
+	-- 						completions = {
+	-- 							enabled = true,
+	-- 						},
+	-- 						enabled = true,
+	-- 						memory = true,
+	-- 					},
+	-- 				},
+	-- 			},
+	-- 		},
+	-- 	})
+	-- end,
 	["ruff"] = function()
 		require("lspconfig").ruff.setup({
 			on_attach = on_attach,
@@ -170,12 +188,35 @@ mlsp.setup_handlers({
 	end,
 	["gopls"] = function()
 		require("lspconfig").gopls.setup({
+			on_attach = on_attach,
+			capabilities = capabilities,
+			cmd = { "gopls" },
+			filetypes = { "go", "gomod", "gowork", "goTmpl" },
 			settings = {
 				gopls = {
 					analyses = {
 						unusedparams = true,
 					},
 					staticcheck = true,
+				},
+			},
+		})
+	end,
+	["rust_analyzer"] = function()
+		require("lspconfig").rust_analyzer.setup({
+			on_attach = on_attach,
+			capabilities = capabilities,
+			settings = {
+				["rust-analyzer"] = {
+					diagnostics = {
+						enable = true,
+					},
+					imports = {
+						granularity = {
+							group = "module",
+						},
+						prefix = "self",
+					},
 				},
 			},
 		})

@@ -8,12 +8,9 @@ require("formatter").setup({
 				return {
 					exe = "goimports-reviser",
 					args = {
-						"-rm-unused",
-						"-set-alias",
 						"-format",
 						util.escape_path(util.get_current_buffer_file_path()),
 					},
-					stdin = true,
 				}
 			end,
 		},
@@ -33,6 +30,16 @@ require("formatter").setup({
 			function()
 				return {
 					exe = "ruff format",
+					args = {
+						util.escape_path(util.get_current_buffer_file_path()),
+					},
+				}
+			end,
+		},
+		rust = {
+			function()
+				return {
+					exe = "rustfmt",
 					args = {
 						util.escape_path(util.get_current_buffer_file_path()),
 					},
