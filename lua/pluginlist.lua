@@ -20,8 +20,13 @@ return {
 
 	"williamboman/mason.nvim",
 
-	"williamboman/mason-lspconfig.nvim",
-	"neovim/nvim-lspconfig",
+	{
+		"williamboman/mason-lspconfig.nvim",
+		dependencies = {
+			"neovim/nvim-lspconfig",
+			"ray-x/lsp_signature.nvim",
+		},
+	},
 
 	"mhartington/formatter.nvim",
 
@@ -89,5 +94,9 @@ return {
 		config = true,
 		-- use opts = {} for passing setup options
 		-- this is equivalent to setup({}) function
+	},
+	{
+		"stevearc/conform.nvim",
+		opts = {},
 	},
 }

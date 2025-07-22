@@ -1,53 +1,45 @@
-local util = require("formatter.util")
-require("formatter").setup({
-	logging = true,
-	log_level = vim.log.levels.INFO,
-	filetype = {
+require("conform").setup({
+	format_after_save = {
+		lsp_format = "fallback",
+	},
+	notify_on_error = true,
+	notify_no_formatters = true,
+	log_level = vim.log.levels.ERROR,
+	format_on_save = {
+		-- I recommend these options. See :help conform.format for details.
+		lsp_format = "fallback",
+		quiet = true,
+		timeout_ms = 500,
+	},
+	formatters_by_ft = {
 		go = {
-			function()
-				return {
-					exe = "goimports-reviser",
-					args = {
-						"-format",
-						util.escape_path(util.get_current_buffer_file_path()),
-					},
-				}
-			end,
+			"goformatter",
 		},
 		lua = {
-			require("formatter.filetypes.lua").stylua,
+			"stylua",
 		},
 		javascript = {
-			require("formatter.defaults.prettier"),
+			"prettier",
 		},
 		typescript = {
-			require("formatter.defaults.prettier"),
+			"prettier",
 		},
 		json = {
-			require("formatter.defaults.prettier"),
+			"prettier",
 		},
 		python = {
-			function()
-				return {
-					exe = "ruff format",
-					args = {
-						util.escape_path(util.get_current_buffer_file_path()),
-					},
-				}
-			end,
+			"ruff_format",
 		},
-		rust = {
-			function()
-				return {
-					exe = "rustfmt",
-					args = {
-						util.escape_path(util.get_current_buffer_file_path()),
-					},
-				}
-			end,
-		},
-		["*"] = {
-			require("formatter.filetypes.any").remove_trailing_whitespace,
+		rust = { "rust_fmt" },
+	},
+	formatters = {
+		goformatter = {
+			command = "goimports-reviser",
+			args = {
+				"-format",
+				"$FILENAME",
+			},
+			stdin = false,
 		},
 	},
 })

@@ -8,18 +8,39 @@ vim.o.tabstop = 4
 vim.o.shiftwidth = 4
 vim.o.mouse = "a"
 
+vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
+
+vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagnostic [Q]uickfix list" })
+vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { desc = "Show [E]rror Message Diagnostic" })
+vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go To Prev Message [D]iagnostic" })
+vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go To Next Message [D]iagnostic" })
+
 vim.keymap.set("n", "<leader>fe", ":Ex<CR>:set nu rnu<CR>")
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 vim.keymap.set("v", "<C-d>", "<C-d>zzz")
 vim.keymap.set("v", "<C-p>", "<C-p>zzz")
 vim.keymap.set("v", "<leader>yy", '"+y')
+
+vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left window" })
+vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right window" })
+vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
+vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
+
 vim.o.guicursor = "n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20"
 
 vim.keymap.set("n", "<leader>FF", "<cmd>FormatWrite<CR>")
 
 local autogroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
+
+autocmd("FileType", {
+	pattern = "netrw",
+	callback = function()
+		vim.opt_local.number = true
+		vim.opt_local.relativenumber = true
+	end,
+})
 
 local function preserve_user_marks(callback)
 	-- Get current user-defined marks (a-z)
@@ -40,15 +61,15 @@ local function preserve_user_marks(callback)
 	end
 end
 
-autogroup("__formatter__", { clear = true })
-autocmd("BufWritePost", {
-	group = "__formatter__",
-	callback = function()
-		preserve_user_marks(function()
-			vim.cmd("FormatWrite")
-		end)
-	end,
-})
+-- autogroup("__formatter__", { clear = true })
+-- autocmd("BufWritePost", {
+-- 	group = "__formatter__",
+-- 	callback = function()
+-- 		preserve_user_marks(function()
+-- 			vim.cmd("FormatWrite")
+-- 		end)
+-- 	end,
+-- })
 
 -- @param input string
 -- @param sep string
