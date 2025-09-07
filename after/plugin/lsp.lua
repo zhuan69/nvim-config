@@ -1,6 +1,5 @@
 local lsp_signature = require("lsp_signature")
 local on_attach = function(client, bufnr)
-	print("LSP Attch: " .. client.name)
 	local bufmap = function(keys, func)
 		vim.keymap.set("n", keys, func, { buffer = bufnr })
 	end
@@ -70,6 +69,59 @@ local installed_lsp = {
 -- 	end
 -- end)
 require("neodev").setup()
+vim.lsp.config("css_variables", {
+	on_attach = on_attach,
+	capabilities = capabilities,
+	settings = {
+		cssVariables = {
+			blacklistFolders = {
+				"**/.cache",
+				"**/.DS_Store",
+				"**/.git",
+				"**/.hg",
+				"**/.next",
+				"**/.svn",
+				"**/bower_components",
+				"**/CVS",
+				"**/dist",
+				"**/node_modules",
+				"**/tests",
+				"**/tmp",
+			},
+			lookupFiles = { "**/*.less", "**/*.scss", "**/*.sass", "**/*.css" },
+		},
+	},
+	filetypes = { "css", "scss", "less" },
+	cmd = { "css-variables-language-server", "--stdio" },
+	root_markers = { "package.json", ".git" },
+})
+vim.lsp.config("cssmodules_ls", {
+	on_attach = on_attach,
+	capabilities = capabilities,
+	filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
+	cmd = { "cssmodules-language-server" },
+})
+vim.lsp.config("cssls", {
+	on_attach = on_attach,
+	capabilities = capabilities,
+	init_options = {
+		provideFormatter = true,
+	},
+	settings = {
+		css = {
+			validate = true,
+		},
+		less = {
+			validate = true,
+		},
+		scss = {
+			validate = true,
+		},
+	},
+	filetypes = { "css", "scss", "less" },
+	cmd = { "vscode-css-language-server", "--stdio" },
+	root_markers = { "package.json", ".git" },
+})
 vim.lsp.config("lua_ls", {
 	on_attach = on_attach,
 	capabilities = capabilities,

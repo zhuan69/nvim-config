@@ -92,10 +92,11 @@ local function matched_keyword(keywords, input)
 	end
 	for _, value in ipairs(keywords) do
 		if set[value] then
+			print("here")
 			return true
 		end
-		return false
 	end
+	return false
 end
 
 vim.api.nvim_create_user_command("GoAddTags", function(opts)
@@ -104,7 +105,7 @@ vim.api.nvim_create_user_command("GoAddTags", function(opts)
 	local row, _ = unpack(vim.api.nvim_win_get_cursor(0))
 	local line_content = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1]
 	local struct_name = line_content:match("^%s*type%s+([%w_]+)%s+struct%s*{?")
-	local tags, style = unpack(split(args, "%s"))
+	local tags, style, option_tags = unpack(split(args, "%s"))
 	local tag_keywords = { "json", "db", "bson", "form" }
 	if struct_name then
 		local base_cmd = {
@@ -120,6 +121,10 @@ vim.api.nvim_create_user_command("GoAddTags", function(opts)
 		end
 		if style == nil then
 			style = "camelcase"
+		end
+		if option_tags ~= nil then
+			table.insert(base_cmd, "-add-options")
+			table.insert(base_cmd, option_tags)
 		end
 		table.insert(base_cmd, "-transform")
 		table.insert(base_cmd, style)
